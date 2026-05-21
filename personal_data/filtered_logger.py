@@ -2,8 +2,10 @@
 """Filtered logger module"""
 
 import re
+from typing import List
 
 
-def filter_datum(fields, redaction, message, separator):
-    """Obfuscates sensitive fields using regex"""
-    return re.sub(rf"({'|'.join(fields)})=[^{separator}]*", r"\1=" + redaction, message)
+def filter_datum(fields: List[str], redaction: str, message: str, separator: str) -> str:
+    """Obfuscate sensitive fields in a log message"""
+    pattern = r"(" + "|".join(fields) + r")=[^" + separator + r"]*"
+    return re.sub(pattern, r"\1=" + redaction, message)
