@@ -3,31 +3,31 @@
 
 import logging
 import re
-from typing import List, Tuple
+from typing import List
 
 
 def filter_datum(fields: List[str], redaction: str,
                  message: str, separator: str) -> str:
-    """Obfuscate fields in a log message using regex"""
-    pattern: str = r'(' + '|'.join(fields) + r')=[^' + separator + r']*'
-    return re.sub(pattern, r'\1=' + redaction, message)
+    """Obfuscate sensitive fields in log messages"""
+    return re.sub(r'(' + '|'.join(fields) + r')=[^' + separator + r']*',
+                  r'\1=' + redaction, message)
 
 
 class RedactingFormatter(logging.Formatter):
-    """Redacting Formatter class for sensitive data"""
+    """Redacting formatter that filters sensitive info"""
 
-    REDACTION: str = "***"
-    FORMAT: str = "[HOLBERTON] %(name)s %(levelname)s " \
-                  "%(asctime)-15s: %(message)s"
-    SEPARATOR: str = ";"
+    REDACTION = "***"
+    FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
+    SEPARATOR = ";"
 
-    def __init__(self, fields: List[str]) -> None:
-        """Initialize formatter with fields to redact"""
+    def __init__(self, fields: List[str]):
         super().__init__(self.FORMAT)
-        self.fields: List[str] = fields
+        self.fields = fields
 
     def format(self, record: logging.LogRecord) -> str:
-        """Format log record and redact sensitive fields"""
-        msg: str = super().format(record)
-        return filter_datum(self.fields, self.REDACTION,
-                            msg, self.SEPARATOR)
+        return filter_datum(
+            self.fields,
+            self.REDACTION,
+            super().format(record),
+            self.SEPARATOR
+        )
