@@ -33,3 +33,28 @@ class RedactingFormatter(logging.Formatter):
             super().format(record),
             self.SEPARATOR
         )
+
+
+# =========================
+# TASK 2 STARTS HERE
+# =========================
+
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
+
+
+def get_logger() -> logging.Logger:
+    """Return a configured logger for user data"""
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.INFO)
+
+    formatter = RedactingFormatter(fields=PII_FIELDS)
+    handler.setFormatter(formatter)
+
+    logger.handlers = []
+    logger.addHandler(handler)
+
+    return logger
