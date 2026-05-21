@@ -10,7 +10,6 @@ def index_range(page: int, page_size: int) -> tuple:
     """Return start and end indexes"""
     start = (page - 1) * page_size
     end = start + page_size
-
     return (start, end)
 
 
@@ -34,14 +33,12 @@ class Server:
 
         return self.__dataset
 
-    def get_page(self, page: int = 1,
-                 page_size: int = 10) -> List[List]:
+    def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
         """Return requested page"""
         assert isinstance(page, int) and page > 0
         assert isinstance(page_size, int) and page_size > 0
 
         start, end = index_range(page, page_size)
-
         dataset = self.dataset()
 
         if start >= len(dataset):
@@ -49,15 +46,14 @@ class Server:
 
         return dataset[start:end]
 
-    def get_hyper(self, page: int = 1,
-                  page_size: int = 10) -> dict:
+    def get_hyper(self, page: int = 1, page_size: int = 10) -> dict:
         """Return hypermedia pagination info"""
         data = self.get_page(page, page_size)
+        dataset_len = len(self.dataset())
 
-        total_pages = math.ceil(len(self.dataset()) / page_size)
+        total_pages = math.ceil(dataset_len / page_size)
 
         next_page = page + 1 if page < total_pages else None
-
         prev_page = page - 1 if page > 1 else None
 
         return {
