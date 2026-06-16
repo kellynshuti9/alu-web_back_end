@@ -27,10 +27,19 @@ babel = Babel(app)
 
 @babel.localeselector
 def get_locale():
-    """Get locale for your application"""
+    """Get locale for your application
+    Priority: URL parameter > User settings > Request header > Default
+    """
+    # Priority 1: URL parameter
     locale = request.args.get('locale')
     if locale and locale in app.config['LANGUAGES']:
         return locale
+
+    # Priority 2: User settings
+    if g.user and g.user.get('locale') in app.config['LANGUAGES']:
+        return g.user.get('locale')
+
+    # Priority 3: Request header
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 
@@ -54,7 +63,7 @@ def before_request():
 @app.route('/', methods=['GET'], strict_slashes=False)
 def home():
     """Home page for your application"""
-    return render_template('5-index.html')
+    return render_template('6-index.html')
 
 
 if __name__ == "__main__":
